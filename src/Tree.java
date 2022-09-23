@@ -1,6 +1,7 @@
 import java.util.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.io.*;
+import java.math.BigInteger;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -30,17 +31,37 @@ public class Tree {
 		return sha1Code(listToString());
 	}
 	
-	public String sha1Code(String fileName) throws IOException, NoSuchAlgorithmException {
-        FileInputStream fileInputStream = new FileInputStream(fileName);
-        MessageDigest digest = MessageDigest.getInstance("SHA-1");
-        DigestInputStream digestInputStream = new DigestInputStream(fileInputStream, digest);
-        byte[] bytes = new byte[1024];
-        while (digestInputStream.read(bytes) > 0);
-        digestInputStream.close();
-        byte[] resultByteArry = digest.digest();
-        return bytesToHexString(resultByteArry);
-	}
-    
+	public static String sha1Code(String input)
+    {
+        try {
+            // getInstance() method is called with algorithm SHA-1
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+ 
+            // digest() method is called
+            // to calculate message digest of the input string
+            // returned as array of byte
+            byte[] messageDigest = md.digest(input.getBytes());
+ 
+            // Convert byte array into signum representation
+            BigInteger no = new BigInteger(1, messageDigest);
+ 
+            // Convert message digest into hex value
+            String hashtext = no.toString(16);
+ 
+            // Add preceding 0s to make it 32 bit
+            while (hashtext.length() < 32) {
+                hashtext = "0" + hashtext;
+            }
+ 
+            // return the HashText
+            return hashtext;
+        }
+ 
+        // For specifying wrong message digest algorithms
+        catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 	
 	 public static String bytesToHexString(byte[] bytes) {
